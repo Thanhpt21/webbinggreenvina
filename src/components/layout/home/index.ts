@@ -6,4 +6,5 @@ export { default as TopCategories } from "./TopCategories";
 export {default as Thuonghieu} from "./Thuonghieu"
 export { default as ProductList } from "./ProductList";
 export { default as TopFooter } from "./TopFooter";
-export {default as BlogHome} from "./Bloghome";
+export {default as BlogHome} from "./BlogHome";
+export {default as Introducing } from "./Introducing ";

@@ -6,18 +6,20 @@ import {ProductList} from "@/components/layout/home"
 import {TopFooter} from "@/components/layout/home"
 import {Thuonghieu} from "@/components/layout/home"
 import {BlogHome} from "@/components/layout/home"
+import {Introducing} from "@/components/layout/home"
 
 
 export default function Page() {
   return (
     <main className="flex flex-col bg-gray-50">
       <Banner />
-      <FlashDeals />
+      <Introducing />
+      {/* <FlashDeals /> */}
       <TopCategories />
       <ProductList />
       <BlogHome />
       {/* <Thuonghieu/> */}
-      {/* <TopFooter /> */}
+      <TopFooter />
     </main>
   )
 }
