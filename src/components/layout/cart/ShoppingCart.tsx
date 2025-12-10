@@ -13,24 +13,31 @@ import { useAllAttributes } from '@/hooks/attribute/useAllAttributes';
 import { useAttributeValues } from '@/hooks/attribute-value/useAttributeValues';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { formatVND } from '@/utils/helpers';
-import { useCartStore } from '@/stores/cartStore';
 import { useMyCart } from '@/hooks/cart/useMyCart';
+import { useCartStore } from '@/stores/cartStore';
 
 const ShoppingCart = () => {
   const { currentUser, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [mounted, setMounted] = useState(false);
+  
+  // Sử dụng từ cart store
   const {
     items,
     getTotalPrice,
     updateQuantityOptimistic,
     removeItemOptimistic,
-    syncFromServer,
     selectedItems,
     setSelectedItems,
-    clearCart
+    clearCart,
+    getSelectedTotal,
+    toggleSelectItem,
+    selectAll: selectAllFromStore,
+    isSelectAll,
+    getItemCount,
   } = useCartStore();
+  
   const removeItemMutation = useRemoveCartItem();
   const updateItemMutation = useUpdateCartItem();
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
@@ -43,65 +50,43 @@ const ShoppingCart = () => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (cartData?.items) {
-      startTransition(() => {
-        syncFromServer(cartData.items);
-      });
-    }
-  }, [cartData?.items, syncFromServer]);
+  // Xóa syncFromServer vì không dùng database
+  // useEffect(() => {
+  //   if (cartData?.items) {
+  //     startTransition(() => {
+  //       syncFromServer(cartData.items);
+  //     });
+  //   }
+  // }, [cartData?.items, syncFromServer]);
 
   // Cập nhật selectAll khi selectedItems thay đổi
   useEffect(() => {
-    setSelectAll(selectedItems.size > 0 && selectedItems.size === items.length);
-  }, [selectedItems, items.length]);
+    setSelectAll(isSelectAll());
+  }, [selectedItems, items.length, isSelectAll]);
 
   // Tạo map cho thuộc tính
-    const attributeMap = useMemo(() => {
+  const attributeMap = useMemo(() => {
     return allAttributes?.reduce((acc: Record<number, string>, attr: any) => {
       acc[attr.id] = attr.name;
       return acc;
     }, {} as Record<number, string>) ?? {};
   }, [allAttributes]);
 
-    const attributeValueMap = useMemo(() => {
+  const attributeValueMap = useMemo(() => {
     return allAttributeValues?.data?.reduce((acc: Record<number, string>, val: any) => {
       acc[val.id] = val.value;
       return acc;
     }, {} as Record<number, string>) ?? {};
   }, [allAttributeValues]);
 
-  useEffect(() => {
-    setSelectAll(selectedItems.size > 0 && selectedItems.size === items.length);
-  }, [selectedItems, items.length]);
-
-
   // === CHECKBOX HANDLERS ===
   const handleCheckboxChange = (itemId: number) => {
-    const newSelectedItems = new Set(selectedItems);
-    if (newSelectedItems.has(itemId)) {
-      newSelectedItems.delete(itemId);
-    } else {
-      newSelectedItems.add(itemId);
-    }
-    setSelectedItems(newSelectedItems);
+    toggleSelectItem(itemId);
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectAll(checked);
-    if (checked) {
-      const allItemIds = items.map(item => item.id);
-      setSelectedItems(new Set(allItemIds));
-    } else {
-      setSelectedItems(new Set());
-    }
-  };
-
-  // === TÍNH TỔNG CHỈ CÁC ITEM ĐƯỢC CHỌN ===
-  const getSelectedTotal = () => {
-    return items
-      .filter(item => selectedItems.has(item.id))
-      .reduce((total, item) => total + item.finalPrice * item.quantity, 0);
+    const allItemIds = items.map((item: any) => item.id);
+    setSelectedItems(checked ? new Set(allItemIds) : new Set());
   };
 
   // === LOADING & ERROR STATES ===
@@ -135,15 +120,13 @@ const ShoppingCart = () => {
   const handleRemoveItem = (item: any) => {
     startTransition(() => {
       removeItemOptimistic(item.id);
-      const newSelected = new Set(selectedItems);
-      newSelected.delete(item.id);
-      setSelectedItems(newSelected);
       
-      removeItemMutation.mutate(item.id, {
-        onError: () => {
-          message.error('Xóa sản phẩm thất bại');
-        },
-      });
+      // Không cần xóa khỏi database vì chỉ lưu localStorage
+      // removeItemMutation.mutate(item.id, {
+      //   onError: () => {
+      //     message.error('Xóa sản phẩm thất bại');
+      //   },
+      // });
     });
   };
 
@@ -152,16 +135,18 @@ const ShoppingCart = () => {
     if (!value || value < 1 || value === item.quantity) return;
 
     startTransition(() => {
-      updateQuantityOptimistic(item.productVariantId, value);
-      updateItemMutation.mutate(
-        { id: item.id, data: { quantity: value } },
-        {
-          onError: () => {
-            message.error('Cập nhật số lượng thất bại');
-            updateQuantityOptimistic(item.productVariantId, item.quantity);
-          },
-        }
-      );
+      updateQuantityOptimistic(item.id, value); // Thay đổi: sử dụng item.id thay vì productVariantId
+      
+      // Không cần update database
+      // updateItemMutation.mutate(
+      //   { id: item.id, data: { quantity: value } },
+      //   {
+      //     onError: () => {
+      //       message.error('Cập nhật số lượng thất bại');
+      //       updateQuantityOptimistic(item.id, item.quantity);
+      //     },
+      //   }
+      // );
     });
   };
 
@@ -239,53 +224,7 @@ const ShoppingCart = () => {
         );
       },
     },
-    {
-      title: 'Giá gốc',
-      key: 'originalPrice',
-      width: 120,
-      render: (_: any, r: any) => (
-        <span className="font-semibold text-gray-900">{formatVND(r.priceAtAdd)}</span>
-      ),
-    },
-    {
-      title: 'Giảm giá',
-      key: 'discount',
-      width: 80,
-      render: (_: any, record: any) => {
-        const promotion = record.variant.product.promotionProducts?.[0];
-        if (!promotion) return <span>-</span>;
-
-        let discountText = '';
-        if (promotion.discountType === 'PERCENT') {
-          discountText = `${promotion.discountValue}%`;
-        } else if (promotion.discountType === 'FIXED') {
-          discountText = formatVND(promotion.discountValue);
-        }
-
-        return <span className="text-red-600 font-medium">{discountText}</span>;
-      },
-    },
-    {
-      title: 'Giá sau giảm',
-      key: 'discountedPrice',
-      width: 130,
-      render: (_: any, r: any) => {
-        const promotion = r.variant.product.promotionProducts?.[0];
-        const basePrice = r.priceAtAdd;
-        if (!promotion) {
-          return <span className="font-semibold text-gray-900">{formatVND(basePrice)}</span>;
-        }
-
-        let discountedPrice = basePrice;
-        if (promotion.discountType === 'PERCENT') {
-          discountedPrice = basePrice - (basePrice * promotion.discountValue) / 100;
-        } else if (promotion.discountType === 'FIXED') {
-          discountedPrice = basePrice - promotion.discountValue;
-        }
-
-        return <span className="font-semibold text-blue-600">{formatVND(discountedPrice)}</span>;
-      },
-    },
+    
     {
       title: 'Số lượng',
       key: 'quantity',
@@ -318,24 +257,15 @@ const ShoppingCart = () => {
       ),
     },
     {
-      title: 'Tổng',
-      key: 'total',
+      title: 'Thành tiền',
+      key: 'contact',
       width: 100,
-      render: (_: any, r: any) => {
-        const promotion = r.variant.product.promotionProducts?.[0];
-        const basePrice = r.priceAtAdd;
-        if (!promotion) {
-          return <span className="font-semibold text-gray-900">{formatVND(basePrice * r.quantity)}</span>;
-        }
-
-        let discountedPrice = basePrice;
-        if (promotion.discountType === 'PERCENT') {
-          discountedPrice = basePrice - (basePrice * promotion.discountValue) / 100;
-        } else if (promotion.discountType === 'FIXED') {
-          discountedPrice = basePrice - promotion.discountValue;
-        }
-
-        return <span className="font-semibold text-blue-600">{formatVND(discountedPrice * r.quantity)}</span>;
+      render: () => {
+        return (
+          <span className="font-semibold text-blue-600">
+            Liên hệ
+          </span>
+        );
       },
     },
     {
@@ -413,7 +343,7 @@ const ShoppingCart = () => {
             <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Giỏ hàng của bạn
             </h1>
-            <p className="text-gray-600">Bạn có {items.length} sản phẩm trong giỏ hàng</p>
+            <p className="text-gray-600">Bạn có {getItemCount()} sản phẩm trong giỏ hàng</p>
           </div>
        
         </div>
@@ -424,7 +354,7 @@ const ShoppingCart = () => {
             Giỏ hàng của bạn
           </h1>
           <div className="flex items-center justify-between">
-            <p className="text-gray-600 text-sm">Bạn có {items.length} sản phẩm</p>
+            <p className="text-gray-600 text-sm">Bạn có {getItemCount()} sản phẩm</p>
           
           </div>
         </div>
@@ -450,7 +380,7 @@ const ShoppingCart = () => {
             <span className="text-sm font-medium">Chọn tất cả</span>
           </div>
           
-          {items.map((item) => {
+          {items.map((item: any) => {
             const thumb = item.variant?.thumb || item.variant?.product?.thumb;
             const promotion = item.variant.product.promotionProducts?.[0];
             const basePrice = item.priceAtAdd;
@@ -555,7 +485,7 @@ const ShoppingCart = () => {
                     <div className="mt-1.5 pt-1.5 border-t flex justify-between items-center">
                       <span className="text-xs text-gray-600">Tổng:</span>
                       <span className="text-blue-600 font-bold text-sm">
-                        {formatVND(discountedPrice * item.quantity)}
+                        Liên hệ
                       </span>
                     </div>
                   </div>
@@ -572,20 +502,24 @@ const ShoppingCart = () => {
               <div className="text-sm text-gray-600">
                 Đã chọn: <span className="font-semibold">{selectedItems.size}</span> / {items.length} sản phẩm
               </div>
-              <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <div className="text-xl md:text-2xl font-bold">
-                  Tổng: {formatVND(getSelectedTotal())}
-                </div>
-                <Button
-                  type="primary"
-                  size="large"
-                  onClick={handleCheckoutClick}
-                  disabled={isPending || selectedItems.size === 0}
-                  className="w-full md:w-auto md:min-w-40 !rounded-xl"
-                >
-                  Đặt hàng ({selectedItems.size})
-                </Button>
-              </div>
+             <div className="flex flex-col md:flex-row md:items-center gap-4">
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => {
+                  if (selectedItems.size === 0) {
+                    message.warning('Vui lòng chọn ít nhất một sản phẩm để liên hệ');
+                    return;
+                  }
+                  // Gọi điện đến số 0903776456
+                  window.location.href = 'tel:0903776456';
+                }}
+                disabled={isPending || selectedItems.size === 0}
+                className="w-full md:w-auto md:min-w-48 !rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 border-0"
+              >
+                📞 Liên hệ 0903776456
+              </Button>
+            </div>
             </div>
           </div>
         </div>

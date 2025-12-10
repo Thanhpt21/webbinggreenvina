@@ -8,12 +8,10 @@ interface CartStore {
   isHydrated: boolean;
 
   // Actions
-  syncFromServer: (serverItems: any[]) => void;
-  addItemOptimistic: (item: Omit<CartItem, 'id'> & { id: number }) => void;
-  updateQuantityOptimistic: (variantId: number, quantity: number) => void;
+  addItemOptimistic: (item: CartItem) => void;
+  updateQuantityOptimistic: (itemId: number, quantity: number) => void;
   removeItemOptimistic: (id: number) => void;
   getTotalPrice: () => number;
-  replaceTempId: (tempId: number, realId: number) => void;
 
   // Selected items actions
   setSelectedItems: (items: Set<number>) => void;
@@ -25,6 +23,7 @@ interface CartStore {
   // Getters
   isSelectAll: () => boolean;
   getSelectedTotal: () => number;
+  getItemCount: () => number;
 }
 
 const createEmptyProduct = (): Product => ({
@@ -64,96 +63,45 @@ export const useCartStore = create<CartStore>()(
       selectedItems: new Set<number>(),
       isHydrated: false,
 
-      // Sync items from server
-      syncFromServer: (serverItems) => {
-        const mapped: CartItem[] = serverItems.map((item: any) => {
-          const productServer = item.variant?.product || {};
-
-          // Clone sạch product
-          const product: Product = {
-            id: productServer.id || 0,
-            tenantId: productServer.tenantId || 0,
-            name: productServer.name || 'Sản phẩm không xác định',
-            slug: productServer.slug || '',
-            description: productServer.description || '',
-            basePrice: productServer.basePrice || 0,
-            thumb: productServer.thumb || '',
-            images: productServer.images || [],
-            status: productServer.status || 'ACTIVE',
-            isPublished: productServer.isPublished ?? false,
-            isFeatured: productServer.isFeatured ?? false,
-            totalRatings: productServer.totalRatings || 0,
-            totalReviews: productServer.totalReviews || 0,
-            numberSold: productServer.numberSold || 0,
-            categoryId: productServer.categoryId || 0,
-            brandId: productServer.brandId || 0,
-            createdById: productServer.createdById || 0,
-            weight: productServer.weight || 0,
-            length: productServer.length || 0,
-            width: productServer.width || 0,
-            height: productServer.height || 0,
-            createdAt: productServer.createdAt || '',
-            updatedAt: productServer.updatedAt || '',
-            promotionProducts: Array.isArray(productServer.promotionProducts)
-              ? [...productServer.promotionProducts]
-              : [],
-            seoTitle: productServer.seoTitle || '',
-            seoDescription: productServer.seoDescription || '',
-            seoKeywords: productServer.seoKeywords || '',
-          };
-
-          const basePrice = item.variant?.priceDelta ?? product.basePrice;
-
-          const finalPrice = product.promotionProducts.length
-            ? product.promotionProducts[0].discountType === 'PERCENT'
-              ? basePrice * (1 - product.promotionProducts[0].discountValue / 100)
-              : Math.max(0, basePrice - product.promotionProducts[0].discountValue)
-            : basePrice;
-
-          return {
-            id: item.id,
-            cartId: item.cartId,
-            productVariantId: item.productVariantId,
-            quantity: item.quantity,
-            priceAtAdd: item.priceAtAdd,
-            finalPrice,
-            createdAt: item.createdAt || '',
-            updatedAt: item.updatedAt || '',
-            variant: {
-              id: item.variant?.id || 0,
-              productId: product.id,
-              sku: item.variant?.sku || '',
-              barcode: item.variant?.barcode || '',
-              priceDelta: item.variant?.priceDelta || 0,
-              price: item.variant?.price ?? null,
-              attrValues: item.variant?.attrValues || {},
-              thumb: item.variant?.thumb || null,
-              warehouseId: item.variant?.warehouseId ?? null,
-              product,
-            },
-          };
-        });
-
-        // Keep only valid selected items
-        const currentSelected = get().selectedItems;
-        const validSelected = new Set(
-          mapped.filter((item) => currentSelected.has(item.id)).map((i) => i.id)
-        );
-
-        set({ items: mapped, selectedItems: validSelected, isHydrated: true });
-      },
-
-      addItemOptimistic: (newItem) =>
+      addItemOptimistic: (newItem: CartItem) =>
         set((state) => {
-          const newSelected = new Set(state.selectedItems);
-          newSelected.add(newItem.id);
-          return { items: [...state.items, newItem], selectedItems: newSelected };
+          // Kiểm tra xem sản phẩm đã có trong giỏ chưa (theo productId)
+          const existingItemIndex = state.items.findIndex(
+            item => item.productId === newItem.productId
+          );
+
+          if (existingItemIndex !== -1) {
+            // Nếu đã có, tăng số lượng
+            const updatedItems = [...state.items];
+            const existingItem = updatedItems[existingItemIndex];
+            updatedItems[existingItemIndex] = {
+              ...existingItem,
+              quantity: existingItem.quantity + newItem.quantity,
+              finalPrice: existingItem.priceAtAdd * (existingItem.quantity + newItem.quantity)
+            };
+            
+            const newSelected = new Set(state.selectedItems);
+            newSelected.add(existingItem.id);
+            
+            return { 
+              items: updatedItems, 
+              selectedItems: newSelected 
+            };
+          } else {
+            // Nếu chưa có, thêm mới
+            const newSelected = new Set(state.selectedItems);
+            newSelected.add(newItem.id);
+            return { 
+              items: [...state.items, newItem], 
+              selectedItems: newSelected 
+            };
+          }
         }),
 
-      updateQuantityOptimistic: (variantId, quantity) =>
+      updateQuantityOptimistic: (itemId, quantity) =>
         set((state) => ({
           items: state.items.map((i) =>
-            i.productVariantId === variantId
+            i.id === itemId
               ? { ...i, quantity, finalPrice: i.priceAtAdd * quantity }
               : i
           ),
@@ -172,19 +120,6 @@ export const useCartStore = create<CartStore>()(
       getTotalPrice: () =>
         get().items.reduce((sum, i) => sum + i.finalPrice * i.quantity, 0),
 
-      replaceTempId: (tempId, realId) =>
-        set((state) => {
-          const newSelected = new Set(state.selectedItems);
-          if (newSelected.has(tempId)) {
-            newSelected.delete(tempId);
-            newSelected.add(realId);
-          }
-          return {
-            items: state.items.map((i) => (i.id === tempId ? { ...i, id: realId } : i)),
-            selectedItems: newSelected,
-          };
-        }),
-
       setSelectedItems: (items) => set({ selectedItems: items }),
 
       toggleSelectItem: (id) =>
@@ -202,7 +137,6 @@ export const useCartStore = create<CartStore>()(
 
       clearCart: () => {
         set({ items: [], selectedItems: new Set() });
-        localStorage.removeItem('cart-storage');
       },
 
       isSelectAll: () => {
@@ -216,17 +150,27 @@ export const useCartStore = create<CartStore>()(
           .filter((item) => selectedItems.has(item.id))
           .reduce((total, item) => total + item.finalPrice * item.quantity, 0);
       },
+
+      getItemCount: () => {
+        const { items } = get();
+        return items.reduce((total, item) => total + item.quantity, 0);
+      },
     }),
     {
       name: 'cart-storage',
       version: 1,
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.isHydrated = true;
+        }
+      },
       partialize: (state) => ({
-        items: state.items.map((item) => ({
+        items: state.items.map(item => ({
           ...item,
           variant: {
             ...item.variant,
             product: item.variant?.product ? { ...item.variant.product } : createEmptyProduct(),
-          },
+          }
         })),
         selectedItems: Array.from(state.selectedItems),
       }),
@@ -248,6 +192,7 @@ export const useCartStore = create<CartStore>()(
             ...item.variant,
             product: item.variant?.product || createEmptyProduct(),
           },
+          productId: item.productId || (item.variant?.product?.id || 0),
         }));
 
         return {

@@ -116,8 +116,7 @@ const AccountPage = () => {
                     Xin chào <span className="font-semibold text-blue-700">{currentUser?.name || 'Người dùng'}</span>
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
-                    Từ trang quản lý tài khoản, bạn có thể xem đơn hàng gần đây, quản lý địa chỉ giao hàng và thanh toán, 
-                    cũng như chỉnh sửa mật khẩu và thông tin tài khoản.
+                    Trang quản lý thông tin tài khoản.
                   </p>
                 </div>
               )}

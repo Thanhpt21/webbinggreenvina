@@ -16,17 +16,13 @@ import { useAuth } from "@/context/AuthContext";
 
 import ProductImageGallery from "@/components/layout/product/ProductImageGallery";
 import { useProductBySlug } from "@/hooks/product/useProductBySlug";
-import { useProductVariants } from "@/hooks/product-variant/useProductVariants";
-import { useAttributeValues } from "@/hooks/attribute-value/useAttributeValues";
-import { useAllAttributes } from "@/hooks/attribute/useAllAttributes";
 import { useAllCategories } from "@/hooks/category/useAllCategories";
 import { useAllBrands } from "@/hooks/brand/useAllBrands";
-import { useAddCartItemWithOptimistic } from "@/hooks/cart/useAddCartItemWithOptimistic";
 import RatingComponent from "@/components/layout/rating/RatingComponent";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { Product } from "@/types/product.type";
-import { ProductVariant } from "@/types/product-variant.type";
-import { Attribute } from "@/types/attribute.type";
+import { CartItem } from "@/types/cart.type";
+import { useCartStore } from "@/stores/cartStore";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -41,38 +37,17 @@ export default function ProductDetailPage() {
     isLoading: loadingProduct,
     isError,
   } = useProductBySlug({ slug: slug as string });
-  const productId = product?.id;
-  const { data: variants } = useProductVariants(productId);
-  const addToCart = useAddCartItemWithOptimistic();
+  
+  const addItemOptimistic = useCartStore((state) => state.addItemOptimistic);
   const [isAdding, setIsAdding] = useState(false);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [mainImage, setMainImage] = useState<string | null>(null);
-  const [selectedAttributes, setSelectedAttributes] = useState<
-    Record<string, number>
-  >({});
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    null
-  );
 
-  const { data: allAttributes } = useAllAttributes();
-  const { data: allAttributeValues } = useAttributeValues();
   const { data: allCategories } = useAllCategories();
   const { data: allBrands } = useAllBrands();
-
-  const attributeMap =
-    allAttributes?.reduce((acc: Record<number, string>, attr: Attribute) => {
-      acc[attr.id] = attr.name;
-      return acc;
-    }, {} as Record<number, string>) ?? {};
-
-  const attributeValueMap =
-    allAttributeValues?.data.reduce((acc: Record<number, string>, val) => {
-      acc[val.id] = val.value;
-      return acc;
-    }, {} as Record<number, string>) ?? {};
 
   const categoryName = allCategories?.find(
     (cat: any) => cat.id === currentProduct?.categoryId
@@ -91,91 +66,104 @@ export default function ProductDetailPage() {
     }
   }, [product, currentProduct]);
 
-  useEffect(() => {
-    if (!variants) return;
-
-    const matched = variants.find((v) => {
-      return Object.entries(v.attrValues).every(([attrId, valueId]) => {
-        return selectedAttributes[attrId] === valueId;
-      });
-    });
-
-    setSelectedVariant(matched ?? null);
-
-    if (matched && matched.thumb) {
-      setMainImage(getImageUrl(matched.thumb));
-    } else if (product) {
-      setMainImage(getImageUrl(product.thumb ?? null));
-    }
-  }, [selectedAttributes, variants, product]);
-
   const handleThumbnailClick = (img: string) => setMainImage(img);
 
-  const handleAttributeChange = (attrId: string, value: number) => {
-    setSelectedAttributes((prev) => ({ ...prev, [attrId]: value }));
-  };
+const handleAddToCart = useCallback(() => {
+  if (!product) return;
 
-  const handleResetAttributes = () => {
-    setSelectedAttributes({});
-    setSelectedVariant(null);
-    if (product) {
-      setMainImage(getImageUrl(product.thumb ?? null));
-    }
-  };
+  if (!isAuthenticated) {
+    setIsLoginModalOpen(true);
+    return;
+  }
+  if (isAdding) return;
 
-  const handleAddToCart = useCallback(() => {
-    if (!selectedVariant || !product) return;
+  setIsAdding(true);
 
-    if (!isAuthenticated) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-    if (isAdding || !selectedVariant || !product || !isAuthenticated) return;
-
-    setIsAdding(true);
-
-    addToCart(
-      { productVariantId: selectedVariant.id, quantity: 1 },
-      {
-        onOptimisticSuccess: () => {
-          message.success("Đã thêm vào giỏ hàng!");
-          setTimeout(() => setIsAdding(false), 300);
-        },
-        onError: () => {
-          setIsAdding(false);
-        },
+  try {
+    // Tính giá cuối cùng
+    const basePrice = product.basePrice;
+    let finalPrice = basePrice;
+    
+    if (product.promotionProducts && product.promotionProducts.length > 0) {
+      const promo = product.promotionProducts[0];
+      if (promo.discountType === "PERCENT") {
+        finalPrice = basePrice * (1 - promo.discountValue / 100);
+      } else if (promo.discountType === "FIXED") {
+        finalPrice = Math.max(0, basePrice - promo.discountValue);
       }
-    );
-  }, [
-    selectedVariant,
-    product,
-    isAuthenticated,
-    isAdding,
-    addToCart,
-  ]);
-
-  const handleBuyNow = useCallback(() => {
-    if (!selectedVariant || !product || !isAuthenticated) {
-      if (!isAuthenticated) setIsLoginModalOpen(true);
-      return;
     }
 
-    addToCart(
-      { productVariantId: selectedVariant.id, quantity: 1 },
-      {
-        onOptimisticSuccess: () => {
-          message.success("Đã thêm vào giỏ!");
-          router.push("/dat-hang");
+    // Tạo cart item theo đúng cấu trúc CartItem type
+    const newCartItem: CartItem = {
+      id: Date.now(), // ID tạm thời
+      productVariantId: 0, // Không dùng variant nữa
+      productId: product.id,
+      cartId: 0,
+      quantity: 1,
+      priceAtAdd: finalPrice,
+      finalPrice: finalPrice,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      variant: {
+        id: 0,
+        productId: product.id,
+        sku: product.slug || '',
+        barcode: '',
+        priceDelta: 0,
+        price: finalPrice,
+        attrValues: {},
+        thumb: product.thumb || '',
+        warehouseId: null,
+        product: {
+          id: product.id,
+          tenantId: product.tenantId,
+          name: product.name,
+          slug: product.slug,
+          description: product.description || '',
+          basePrice: product.basePrice,
+          thumb: product.thumb || '',
+          images: product.images || [],
+          status: (product.status === 'ACTIVE' || product.status === 'INACTIVE') 
+            ? product.status 
+            : 'ACTIVE', // Default to ACTIVE if not matching
+          isPublished: product.isPublished || false,
+          isFeatured: product.isFeatured || false,
+          totalRatings: product.totalRatings || 0,
+          totalReviews: product.totalReviews || 0,
+          numberSold: product.numberSold || 0,
+          seoTitle: product.seoTitle || '',
+          seoDescription: product.seoDescription || '',
+          seoKeywords: product.seoKeywords || '',
+          categoryId: product.categoryId || 0,
+          brandId: product.brandId || 0,
+          createdById: product.createdById || 0,
+          weight: product.weight || 0,
+          length: product.length || 0,
+          width: product.width || 0,
+          height: product.height || 0,
+          createdAt: product.createdAt || new Date().toISOString(),
+          updatedAt: product.updatedAt || new Date().toISOString(),
+          promotionProducts: product.promotionProducts || [],
         },
-      }
-    );
-  }, [
-    selectedVariant,
-    product,
-    isAuthenticated,
-    addToCart,
-    router,
-  ]);
+      },
+    };
+
+    // Thêm vào store
+    addItemOptimistic(newCartItem);
+    message.success("Đã thêm vào giỏ hàng!");
+    
+  } catch (error) {
+    console.error("Lỗi khi thêm vào giỏ hàng:", error);
+    message.error("Có lỗi xảy ra khi thêm vào giỏ hàng!");
+  } finally {
+    setIsAdding(false);
+  }
+}, [
+  product,
+  isAuthenticated,
+  isAdding,
+  addItemOptimistic,
+]);
 
   const handleLoginModalOk = () => {
     setIsLoginModalOpen(false);
@@ -213,22 +201,11 @@ export default function ProductDetailPage() {
     );
   }
 
-  const attributeOptions: Record<number, Set<number>> = {};
-  variants?.forEach((v) => {
-    Object.entries(v.attrValues).forEach(([attrId, valueId]) => {
-      const numAttrId = Number(attrId);
-      if (!attributeOptions[numAttrId]) attributeOptions[numAttrId] = new Set();
-      attributeOptions[numAttrId].add(valueId as number);
-    });
-  });
-
   const getDiscountedPrice = () => {
     if (!currentProduct?.promotionProducts?.length) return null;
 
     const promo = currentProduct.promotionProducts[0];
-    const basePrice = selectedVariant
-      ? selectedVariant.priceDelta
-      : currentProduct.basePrice;
+    const basePrice = currentProduct.basePrice;
 
     if (promo.discountType === "PERCENT") {
       return basePrice * (1 - promo.discountValue / 100);
@@ -241,20 +218,12 @@ export default function ProductDetailPage() {
   };
 
   const discountedPrice = getDiscountedPrice();
-  const finalPrice = discountedPrice ?? (selectedVariant ? selectedVariant.priceDelta : currentProduct.basePrice);
-  const originalPrice = selectedVariant
-    ? selectedVariant.priceDelta
-    : currentProduct.basePrice;
-
+  const finalPrice = discountedPrice ?? currentProduct.basePrice;
+  const originalPrice = currentProduct.basePrice;
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Breadcrumb Fix: 
-        - flex-nowrap: Bắt buộc không xuống dòng.
-        - items-center: Căn giữa theo trục dọc (tránh lệch icon).
-        - truncate + min-w-0: Tự động cắt chữ "..." nếu tên sản phẩm quá dài.
-      */}
-       {/* Breadcrumb - Style giống trang danh sách sản phẩm */}
+      {/* Breadcrumb */}
       <div className="border-b border-gray-200 mb-8">
         <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 text-sm">
@@ -433,104 +402,31 @@ export default function ProductDetailPage() {
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
                 <div className="flex items-baseline gap-3">
                   <span className="text-sm font-medium opacity-90">Giá bán:</span>
-                  <span className="text-4xl font-bold">{finalPrice.toLocaleString()}</span>
-                  <span className="text-xl font-medium">VNĐ</span>
+                  <span className="text-xl font-bold">Liên hệ: 0903 776 456</span>
                 </div>
-                {selectedVariant && (
-                  <div className="mt-2 text-sm opacity-75">Đã chọn phiên bản</div>
-                )}
               </div>
             )}
 
-            {/* Attributes Section */}
-            <div className="space-y-6">
-              {Object.entries(attributeOptions).map(([attrId, valueSet]) => {
-                const attrName = attributeMap[Number(attrId)] ?? `Thuộc tính ${attrId}`;
-                const allValuesForAttr = allAttributeValues?.data.filter((av) => av.attributeId === Number(attrId)) ?? [];
-
-                return (
-                  <div key={attrId} className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-6 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
-                      <Text strong className="text-lg text-gray-800">{attrName}</Text>
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      {allValuesForAttr.map((av) => {
-                        const isInVariants = valueSet.has(av.id);
-                        const isAvailable = variants?.some((v) => {
-                          if (v.attrValues[attrId] !== av.id) return false;
-                          return Object.entries(selectedAttributes).every(([selectedAttrId, selectedValueId]) => {
-                            if (selectedAttrId === attrId) return true;
-                            return v.attrValues[selectedAttrId] === selectedValueId;
-                          });
-                        }) ?? false;
-                        const isSelected = selectedAttributes[attrId] === av.id;
-
-                        return (
-                          <button
-                            key={av.id}
-                            onClick={() => isAvailable && handleAttributeChange(attrId, av.id)}
-                            disabled={!isAvailable}
-                            className={`
-                              relative px-6 py-3 rounded-xl font-medium transition-all duration-300 transform
-                              ${isSelected
-                                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                                : isAvailable
-                                ? "bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:shadow-md"
-                                : "bg-gray-100 border-2 border-gray-200 text-gray-400 cursor-not-allowed opacity-50"
-                              }
-                            `}
-                          >
-                            {!isAvailable && (
-                              <span className="absolute inset-0 flex items-center justify-center text-red-500 text-xl font-bold">×</span>
-                            )}
-                            <span className={!isAvailable ? "opacity-30" : ""}>{av.value}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Reset Button */}
-            {Object.keys(selectedAttributes).length > 0 && (
-              <div className="pt-2">
-                <Button
-                  onClick={handleResetAttributes}
-                  className="!bg-gray-100 hover:!bg-gray-200 !border-0 !text-gray-700 !rounded-xl !px-6 !py-2 !h-auto font-medium transition-all duration-300"
-                >
-                  🔄 Chọn lại tất cả
-                </Button>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            {/* Action Button */}
+            <div className="pt-4">
               <Button
                 type="primary"
                 size="large"
                 onClick={handleAddToCart}
-                disabled={!selectedVariant || isAdding}
-                className="!h-14 !rounded-xl !text-lg font-semibold !bg-gradient-to-r !from-blue-600 !to-blue-700 hover:!from-blue-700 hover:!to-blue-800 !border-0 shadow-lg hover:shadow-xl transition-all duration-300 disabled:!opacity-50 disabled:!cursor-not-allowed"
+                disabled={isAdding || !product}
+                className="!h-14 !rounded-xl !text-lg font-semibold !bg-gradient-to-r !from-blue-600 !to-blue-700 hover:!from-blue-700 hover:!to-blue-800 !border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 disabled:!opacity-50 disabled:!cursor-not-allowed !px-10"
               >
                 {isAdding ? (
                   <span className="flex items-center gap-2">
-                    <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-white"></span>
+                    <span className="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-white border-r-2"></span>
                     Đang thêm...
                   </span>
                 ) : (
-                  "🛒 Thêm vào giỏ hàng"
+                  <span className="flex items-center gap-2">
+                    <span className="text-xl">🛒</span>
+                    <span>Thêm vào giỏ hàng</span>
+                  </span>
                 )}
-              </Button>
-              <Button
-                size="large"
-                onClick={handleBuyNow}
-                disabled={!selectedVariant}
-                className="!h-14 !rounded-xl !text-lg font-semibold !bg-gradient-to-r !from-purple-600 !to-pink-600 hover:!from-purple-700 hover:!to-pink-700 !text-white !border-0 shadow-lg hover:shadow-xl transition-all duration-300 disabled:!opacity-50 disabled:!cursor-not-allowed"
-              >
-                ⚡ Mua ngay
               </Button>
             </div>
 
@@ -571,7 +467,7 @@ export default function ProductDetailPage() {
               <p className="text-sm text-gray-600 mb-2">Sản phẩm đã chọn:</p>
               <p className="font-bold text-lg text-gray-800 mb-2">{product?.name}</p>
               <p className="text-2xl font-bold text-blue-600">
-                {(selectedVariant?.priceDelta || product?.basePrice)?.toLocaleString()} VNĐ
+                {finalPrice.toLocaleString()} VNĐ
               </p>
             </div>
           </div>
@@ -633,7 +529,7 @@ export default function ProductDetailPage() {
           />
         </div>
 
-        {/* Rating Section - Đã xóa icon, xóa bg, chỉnh font nhỏ */}
+        {/* Rating Section */}
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700">
@@ -645,7 +541,7 @@ export default function ProductDetailPage() {
               </span>
             )}
           </div>
-          {productId && <RatingComponent productId={productId} />}
+          {product?.id && <RatingComponent productId={product.id} />}
         </div>
       </div>
     </div>

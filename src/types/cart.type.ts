@@ -37,6 +37,7 @@ export interface CartItem {
   id: number
   cartId: number
   productVariantId: number
+   productId: number; 
   quantity: number
   priceAtAdd: number
   finalPrice: number

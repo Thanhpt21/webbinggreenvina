@@ -153,36 +153,12 @@ const CartPreviewDropdown: React.FC<CartPreviewDropdownProps> = ({
                   )}
 
                   <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      {promotion ? (
-                        <>
-                          <span className="text-sm font-bold text-blue-600">
-                            {formatVND(discountedPrice)}
-                          </span>
-                          <span className="text-xs text-gray-400 line-through">
-                            {formatVND(basePrice)}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-sm font-bold text-gray-900">
-                          {formatVND(basePrice)}
-                        </span>
-                      )}
-                    </div>
                     <span className="text-xs text-gray-500 mt-1">
-                      SL: {item.quantity}
+                      Số lượng: {item.quantity}
                     </span>
                   </div>
 
-                  {/* Item Total */}
-                  <div className="mt-2 pt-2 border-t border-gray-100">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500">Tổng:</span>
-                      <span className="text-sm font-bold text-gray-900">
-                        {formatVND(discountedPrice * item.quantity)}
-                      </span>
-                    </div>
-                  </div>
+                 
                 </div>
               </div>
             </div>
@@ -200,13 +176,6 @@ const CartPreviewDropdown: React.FC<CartPreviewDropdownProps> = ({
 
       {/* Footer */}
       <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex-shrink-0">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium text-gray-600">Tổng cộng:</span>
-          <span className="text-xl font-bold text-blue-600">
-            {formatVND(totalPrice)}
-          </span>
-        </div>
-
         <div className="flex gap-2">
           <Link href="/gio-hang" className="flex-1">
             <Button 
@@ -216,15 +185,16 @@ const CartPreviewDropdown: React.FC<CartPreviewDropdownProps> = ({
               Xem giỏ hàng
             </Button>
           </Link>
-          <Link href="/dat-hang" className="flex-1">
+          <div className="flex-1">
             <Button 
               type="primary" 
               size="large" 
               className="w-full !rounded-lg"
+              onClick={() => window.location.href = 'tel:0903776456'}
             >
-              Thanh toán
+              📞 Liên hệ
             </Button>
-          </Link>
+          </div>
         </div>
       </div>
     </div>
