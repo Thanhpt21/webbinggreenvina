@@ -1,12 +1,10 @@
 'use client';
 
 import React from 'react';
-import call from '@/assets/images/call.png';
-import zalo from '@/assets/images/zalo.png';
 
 const ContactButtons: React.FC = () => {
   return (
-    <div className="fixed bottom-4 right-4 flex flex-col space-y-3 z-50">
+    <div className="fixed bottom-24 right-4 flex flex-col space-y-3 z-50">
       {/* Nút Zalo */}
       <a
         href="https://zalo.me/your-zalo-id"
@@ -15,7 +13,7 @@ const ContactButtons: React.FC = () => {
         className="flex items-center p-2 rounded-lg shadow hover:bg-green-100 transition"
       >
         <img
-          src={zalo.src}
+          src="image/zalo-icon.png"
           alt="Zalo"
           className="w-10 h-10" // icon to ra
         />
@@ -27,7 +25,7 @@ const ContactButtons: React.FC = () => {
         className="flex items-center p-2 rounded-lg shadow hover:bg-blue-100 transition"
       >
         <img
-          src={call.src}
+         src="image/phone-icon.png"
           alt="Call"
           className="w-10 h-10" // icon to ra
         />

@@ -203,7 +203,7 @@ const Footer = ({ config }: FooterProps) => {
             </h6>
             <ul className="space-y-3 mb-8">
               {[
-                { label: "Hướng dẫn chọn size", href: "/huong-dan-chon-size" },
+              
                 {
                   label: "Khách hàng thân thiết",
                   href: "/chinh-sach-khach-hang-than-thiet",
@@ -255,38 +255,16 @@ const Footer = ({ config }: FooterProps) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-gray-300/20">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-sm text-gray-500 text-center md:text-left">
+       <div className="mt-16 pt-8 border-t border-gray-300/20">
+          <div className="flex flex-col justify-center items-center gap-6 text-center">
+            <p className="text-sm text-gray-500">
               © {new Date().getFullYear()}{" "}
               <span className="font-bold text-gray-800">
                 {config.name || "Your Brand"}
               </span>
-              . All rights reserved. Made with{" "}
-              <HeartOutlined className="text-red-500 mx-1" /> in Vietnam
+              . All rights reserved.
             </p>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
-              <Link
-                href="/dieu-khoan"
-                className="hover:text-gray-800 transition-colors"
-              >
-                Điều khoản
-              </Link>
-              <span className="text-gray-300">•</span>
-              <Link
-                href="/chinh-sach-bao-mat"
-                className="hover:text-gray-800 transition-colors"
-              >
-                Bảo mật
-              </Link>
-              <span className="text-gray-300">•</span>
-              <Link
-                href="/cookies"
-                className="hover:text-gray-800 transition-colors"
-              >
-                Cookies
-              </Link>
-            </div>
+            {/* Thêm các phần tử khác ở đây nếu cần - tất cả sẽ được căn giữa */}
           </div>
         </div>
       </div>

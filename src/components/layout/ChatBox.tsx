@@ -1442,7 +1442,6 @@ return (
         style={{ WebkitTapHighlightColor: 'transparent' }}
       >
         <span className="text-2xl">💬</span>
-        <span className="hidden md:inline">Chat hỗ trợ</span>
         
         {isGuest && (
           <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 shadow-md">
