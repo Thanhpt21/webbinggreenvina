@@ -140,12 +140,12 @@ export default function ProductCardPromoted({
             <div className="flex items-center flex-wrap gap-2">
               {/* Đã giảm size: text-sm sm:text-xl và thêm whitespace-nowrap */}
               <span className="text-transparent bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text font-black text-sm sm:text-xl whitespace-nowrap">
-                {formatVND(discountedPrice)}
+                Liên hệ
               </span>
               
               {showOriginalPrice && discountedPrice < originalPrice && (
                 <span className="text-gray-400 line-through text-xs sm:text-sm whitespace-nowrap">
-                  {formatVND(originalPrice)}
+                  Liên hệ
                 </span>
               )}
             </div>

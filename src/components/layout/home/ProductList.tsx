@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pagination } from "antd";
-import { useNonPromotedProducts } from "@/hooks/product/useNonPromotedProducts";
+import { useAllProducts } from "@/hooks/product/useAllProducts";
 import { Product } from "@/types/product.type";
 import ProductCardFeatured from "../product/ProductCardFeatured";
 
@@ -10,19 +10,35 @@ export default function ProductList() {
   const [currentPage, setCurrentPage] = useState(1);
   const PRODUCTS_PER_PAGE = 12;
 
-  const { data: productsResponse, isLoading, isError } = useNonPromotedProducts({
-    page: currentPage,
-    limit: PRODUCTS_PER_PAGE,
-  });
+  // Sử dụng useAllProducts hook (không có search)
+  const { data: allProducts = [], isLoading, isError } = useAllProducts();
 
-  const filteredProducts = ((productsResponse?.data as Product[]) || []).filter(
-    (p) => p.isPublished && p.isFeatured
-  );
+  // Tính toán phân trang
+  const { paginatedProducts, totalProducts } = useMemo(() => {
+    if (!allProducts || !Array.isArray(allProducts)) {
+      return { paginatedProducts: [], totalProducts: 0 };
+    }
 
-  const totalProducts = productsResponse?.total || 0;
+    // Lọc sản phẩm isFeatured
+    const filteredProducts = allProducts.filter((p: Product) => p.isFeatured);
+    
+    // Tính toán phân trang
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    const endIndex = startIndex + PRODUCTS_PER_PAGE;
+    const paginated = filteredProducts.slice(startIndex, endIndex);
+
+    return {
+      paginatedProducts: paginated,
+      totalProducts: filteredProducts.length,
+    };
+  }, [allProducts, currentPage]);
+
+  console.log("allProducts", allProducts);
+  console.log("paginatedProducts", paginatedProducts);
+  console.log("totalProducts", totalProducts);
 
   if (isLoading) return <div className="py-20 text-center text-gray-500">Đang tải...</div>;
-  if (isError) return null;
+  if (isError) return <div className="py-20 text-center text-red-500">Có lỗi xảy ra khi tải sản phẩm</div>;
 
   return (
     <section className="py-16 bg-white">
@@ -38,32 +54,31 @@ export default function ProductList() {
           </p>
         </div>
 
-        {filteredProducts.length > 0 ? (
+        {paginatedProducts.length > 0 ? (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-              {filteredProducts.map((p, index) => (
-                <ProductCardFeatured key={p.id} product={p} index={index} />
+              {paginatedProducts.map((product: Product, index: number) => (
+                <ProductCardFeatured key={product.id} product={product} index={index} />
               ))}
             </div>
 
             {/* Pagination - Clean */}
             {totalProducts > PRODUCTS_PER_PAGE && (
               <div className="flex justify-center mt-12">
-                  <Pagination
-                    current={currentPage}
-                    total={totalProducts}
-                    pageSize={PRODUCTS_PER_PAGE}
-                    onChange={(page) => setCurrentPage(page)}
-                    showSizeChanger={false}
-                    className="custom-pagination-modern" 
-                    // Lưu ý: Cần CSS global đè Antd pagination cho đẹp, hoặc dùng default
-                  />
+                <Pagination
+                  current={currentPage}
+                  total={totalProducts}
+                  pageSize={PRODUCTS_PER_PAGE}
+                  onChange={(page) => setCurrentPage(page)}
+                  showSizeChanger={false}
+                  className="custom-pagination-modern"
+                />
               </div>
             )}
           </>
         ) : (
           <div className="text-center py-20 text-gray-400">
-            Không tìm thấy sản phẩm nào
+            Không tìm thấy sản phẩm nổi bật nào
           </div>
         )}
       </div>

@@ -530,7 +530,7 @@ const handleAddToCart = useCallback(() => {
         </div>
 
         {/* Rating Section */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
+        {/* <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700">
               Đánh giá từ khách hàng
@@ -542,7 +542,7 @@ const handleAddToCart = useCallback(() => {
             )}
           </div>
           {product?.id && <RatingComponent productId={product.id} />}
-        </div>
+        </div> */}
       </div>
     </div>
   );

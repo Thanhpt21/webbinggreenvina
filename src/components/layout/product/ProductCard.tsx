@@ -53,7 +53,7 @@ export default function ProductCard({ product: p, index = 0 }: ProductCardProps)
             <div className="flex-1">
               {p.basePrice ? (
                 <p className="text-transparent bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text font-bold text-lg sm:text-xl">
-                  {formatVND(p.basePrice)}
+                  Liên hệ
                 </p>
               ) : (
                 <p className="text-gray-500 font-medium text-sm">Liên hệ</p>

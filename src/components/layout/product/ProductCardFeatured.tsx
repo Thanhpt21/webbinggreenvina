@@ -1,3 +1,4 @@
+// ProductCardFeatured.tsx
 "use client";
 
 import { Card, Tooltip, Image } from "antd";
@@ -27,9 +28,9 @@ export default function ProductCardFeatured({ product: p, index = 0 }: ProductCa
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:via-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-500 pointer-events-none"></div>
 
-        {/* Badge HOT (top 4) */}
-        {index < 4 && (
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold py-1.5 px-3 rounded-full shadow-lg backdrop-blur-sm animate-pulse">
+        {/* Badge HOT cho tất cả sản phẩm isFeatured */}
+        {p.isFeatured && (
+          <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold py-1.5 px-3 rounded-full shadow-lg backdrop-blur-sm">
             <TrendingUp className="w-3.5 h-3.5" />
             <span>HOT</span>
           </div>

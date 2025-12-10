@@ -389,7 +389,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Thương hiệu */}
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-white/50">
+      {/* <div className="bg-white/80 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-white/50">
         <div
           className="flex justify-between items-center cursor-pointer pb-3 border-b border-gray-200"
           onClick={() => setShowBrandsFilter(!showBrandsFilter)}
@@ -425,7 +425,7 @@ export default function ProductsPage() {
             )}
           </ul>
         )}
-      </div>
+      </div> */}
     </aside>
   );
 
@@ -642,14 +642,14 @@ export default function ProductsPage() {
                   >
                     <span className="text-red-600">🔥 Khuyến mãi</span>
                   </Checkbox>
-                  <Select
+                  {/* <Select
                     value={sortBy}
                     onChange={handleSortChange}
                     options={sortOptions}
                     className="w-40 modern-select"
                     size="middle"
                     disabled={products.length === 0}
-                  />
+                  /> */}
                 </div>
               </div>
             </div>
