@@ -5,6 +5,7 @@ import {TopCategories} from "@/components/layout/home"
 import {ProductList} from "@/components/layout/home"
 import {TopFooter} from "@/components/layout/home"
 import {Thuonghieu} from "@/components/layout/home"
+import {BlogHome} from "@/components/layout/home"
 
 
 export default function Page() {
@@ -14,8 +15,9 @@ export default function Page() {
       <FlashDeals />
       <TopCategories />
       <ProductList />
-      <Thuonghieu/>
-      <TopFooter />
+      <BlogHome />
+      {/* <Thuonghieu/> */}
+      {/* <TopFooter /> */}
     </main>
   )
 }
