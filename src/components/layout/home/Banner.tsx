@@ -87,9 +87,10 @@ export default function Banner() {
   };
 
   // Loading state
+  // Chỉnh sửa Skeleton: Mobile dùng aspect-video để giữ chỗ tương đối
   if (isLoading || isError || !config || slides.length === 0) {
     return (
-      <div className="w-full h-[200px] sm:h-[350px] md:h-[500px] bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+      <div className="w-full aspect-video sm:aspect-auto sm:h-[350px] md:h-[500px] bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
     );
   }
 
@@ -115,10 +116,14 @@ export default function Banner() {
             }`}
             onClick={() => handleClick(s)}
           >
+            {/* UPDATE: 
+              - Mobile: h-auto (chiều cao tự động theo ảnh), không dùng object-cover để tránh cắt ảnh.
+              - Desktop (sm, md): Giữ nguyên chiều cao cố định và object-cover cho đẹp layout.
+            */}
             <img
               src={s.img}
               alt={`Slide ${s.id}`}
-              className="w-full h-[200px] sm:h-[350px] md:h-[500px] object-cover"
+              className="w-full h-auto sm:h-[350px] md:h-[500px] object-contain sm:object-cover"
               loading="eager"
               fetchPriority="high"
               decoding="async"
@@ -134,7 +139,8 @@ export default function Banner() {
           setIndex((i) => (i - 1 + slides.length) % slides.length);
         }}
         aria-label="Slide trước"
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full p-2 sm:p-3 transition z-10 text-xl sm:text-2xl"
+        // Giảm padding một chút trên mobile để nút gọn hơn
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full p-1.5 sm:p-3 transition z-10 text-lg sm:text-2xl"
       >
         ‹
       </button>
@@ -146,7 +152,7 @@ export default function Banner() {
           setIndex((i) => (i + 1) % slides.length);
         }}
         aria-label="Slide tiếp theo"
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full p-2 sm:p-3 transition z-10 text-xl sm:text-2xl"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full p-1.5 sm:p-3 transition z-10 text-lg sm:text-2xl"
       >
         ›
       </button>
