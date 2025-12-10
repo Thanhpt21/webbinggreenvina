@@ -222,7 +222,7 @@ const handleAddToCart = useCallback(() => {
   const originalPrice = currentProduct.basePrice;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full">
       {/* Breadcrumb */}
       <div className="border-b border-gray-200 mb-8">
         <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 py-4">
