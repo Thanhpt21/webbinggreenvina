@@ -1,0 +1,7 @@
+/* src/app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'antd/dist/antd.css';
+
