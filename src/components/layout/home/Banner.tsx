@@ -69,10 +69,10 @@ export default function IndustrialHero() {
   ];
 
   const stats = [
-    { value: "15+", label: "Năm kinh nghiệm", icon: Award, color: "text-emerald-500" },
-    { value: "500+", label: "Khách hàng doanh nghiệp", icon: Users, color: "text-blue-500" },
-    { value: "10K+", label: "Đơn hàng thành công", icon: Package, color: "text-cyan-500" },
-    { value: "99%", label: "Tỷ lệ hài lòng", icon: ThumbsUp, color: "text-violet-500" }
+    { value: "15+", label: "Năm kinh nghiệm", icon: Award, color: "text-emerald-600" },
+    { value: "500+", label: "Khách hàng doanh nghiệp", icon: Users, color: "text-blue-600" },
+    { value: "10K+", label: "Đơn hàng thành công", icon: Package, color: "text-cyan-600" },
+    { value: "99%", label: "Tỷ lệ hài lòng", icon: ThumbsUp, color: "text-violet-600" }
   ];
 
   const features = [
@@ -113,33 +113,33 @@ export default function IndustrialHero() {
   const parallaxY = scrollY * 0.3;
 
   return (
-    <div ref={heroRef} className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
-      {/* Animated background elements */}
+    <div ref={heroRef} className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden">
+      {/* Animated background elements - Nhẹ hơn */}
       <div className="absolute inset-0 overflow-hidden">
         <div 
-          className="absolute top-0 left-0 w-full h-full opacity-20"
+          className="absolute top-0 left-0 w-full h-full opacity-10"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             transform: `translateY(${parallaxY * 0.5}px)`
           }}
         />
         
-        {/* Animated gradient orbs */}
-        <div className="absolute -top-40 -right-40 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] bg-cyan-500/5 rounded-full blur-3xl" />
+        {/* Subtle gradient orbs */}
+        <div className="absolute -top-40 -right-40 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-emerald-200/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-blue-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] bg-cyan-100/20 rounded-full blur-3xl" />
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.02]"
+      {/* Grid pattern overlay - Mờ hơn */}
+      <div className="absolute inset-0 opacity-[0.03]"
         style={{
-          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px),
-                           linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(to right, #000000 1px, transparent 1px),
+                           linear-gradient(to bottom, #000000 1px, transparent 1px)`,
           backgroundSize: '50px 50px'
         }}
       />
 
-      {/* ĐIỀU CHỈNH PADDING: Mobile sát hơn, desktop rộng hơn */}
+      {/* PADDING ĐIỀU CHỈNH */}
       <div className="relative z-10 mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 py-8 sm:py-12 lg:py-16 xl:py-20">
         {/* Grid layout - Mobile: 1 column, Desktop: 2 columns */}
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 xl:gap-16 items-center">
@@ -152,20 +152,20 @@ export default function IndustrialHero() {
             className="space-y-6 sm:space-y-8"
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-emerald-600/20 to-teal-600/20 backdrop-blur-sm rounded-full border border-emerald-500/30">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-xs sm:text-sm font-semibold text-emerald-300">NHÀ SẢN XUẤT HÀNG ĐẦU</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-emerald-100 to-teal-100 backdrop-blur-sm rounded-full border border-emerald-200">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-xs sm:text-sm font-semibold text-emerald-800">NHÀ SẢN XUẤT HÀNG ĐẦU</span>
             </div>
 
-            {/* Main heading - Responsive font sizes */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-tight">
-              <span className="text-white">SẢN XUẤT</span>
+            {/* Main heading - CHỮ NHỎ HƠN */}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-black leading-tight">
+              <span className="text-gray-900">SẢN XUẤT</span>
               <br />
-              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
                 DÂY ĐAI CÔNG NGHIỆP
               </span>
               <br />
-              <span className="text-white">CHẤT LƯỢNG CAO</span>
+              <span className="text-gray-800">CHẤT LƯỢNG CAO</span>
             </h1>
 
             {/* Decorative line */}
@@ -175,8 +175,8 @@ export default function IndustrialHero() {
               <div className="h-1 w-2 sm:w-3 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full" />
             </div>
 
-            {/* Description */}
-            <p className="text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-xl">
+            {/* Description - CHỮ NHỎ HƠN */}
+            <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed max-w-xl">
               Chuyên sản xuất và cung cấp các loại dây đai công nghiệp với đầy đủ chứng chỉ REACH/ROHS. Giải pháp tối ưu cho vận chuyển, đóng gói và sản xuất.
             </p>
 
@@ -194,12 +194,12 @@ export default function IndustrialHero() {
 
               <button
                 onClick={() => window.open('tel:0903776456', '_blank')}
-                className="group px-6 py-3 sm:px-8 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-3"
+                className="group px-6 py-3 sm:px-8 sm:py-4 bg-white/80 backdrop-blur-sm border border-gray-300 text-gray-800 font-bold rounded-xl hover:bg-white transition-all duration-300 flex items-center justify-center gap-3 shadow-sm"
               >
                 <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
                 <div className="text-left">
                   <div className="text-xs sm:text-sm opacity-80">HOTLINE 24/7</div>
-                  <div className="text-emerald-300 text-sm sm:text-base">0903 776 456</div>
+                  <div className="text-emerald-700 text-sm sm:text-base">0903 776 456</div>
                 </div>
               </button>
             </div>
@@ -212,11 +212,11 @@ export default function IndustrialHero() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 text-center hover:bg-white/10 transition-all duration-300"
+                  className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-3 sm:p-4 text-center hover:bg-white transition-all duration-300 shadow-sm"
                 >
                   <stat.icon className={`w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 sm:mb-2 ${stat.color}`} />
                   <div className={`text-xl sm:text-2xl md:text-3xl font-bold ${stat.color}`}>{stat.value}</div>
-                  <div className="text-xs sm:text-sm text-gray-300 mt-1">{stat.label}</div>
+                  <div className="text-xs sm:text-sm text-gray-600 mt-1">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -229,12 +229,12 @@ export default function IndustrialHero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative mt-8 sm:mt-10 lg:mt-0"
           >
-            {/* Main product card */}
-            <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl sm:rounded-2xl border border-gray-700/50 shadow-xl sm:shadow-2xl overflow-hidden group">
+            {/* Main product card - NỀN SÁNG HƠN */}
+            <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 shadow-xl sm:shadow-2xl overflow-hidden group">
               {/* 3D effect background */}
               <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-blue-500/10" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(52,211,153,0.15),transparent_50%)]" />
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/20 via-transparent to-blue-100/20" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(52,211,153,0.1),transparent_50%)]" />
               </div>
 
               {/* Content */}
@@ -248,7 +248,7 @@ export default function IndustrialHero() {
                       className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 ${
                         activeTab === tab.id
                           ? `bg-gradient-to-r ${tab.color} text-white shadow-lg`
-                          : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                          : 'bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
                       }`}
                     >
                       {tab.name}
@@ -268,36 +268,36 @@ export default function IndustrialHero() {
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
                           {products[activeTab].title}
                         </h3>
-                        <div className="inline-flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1 bg-white/10 backdrop-blur-sm rounded-full">
-                          <span className="text-xs sm:text-sm text-emerald-300">{products[activeTab].category}</span>
+                        <div className="inline-flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1 bg-emerald-50 backdrop-blur-sm rounded-full">
+                          <span className="text-xs sm:text-sm text-emerald-700">{products[activeTab].category}</span>
                         </div>
                       </div>
                       {products[activeTab].popular && (
-                        <div className="px-2.5 py-1 sm:px-3 sm:py-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full text-xs sm:text-sm font-bold">
+                        <div className="px-2.5 py-1 sm:px-3 sm:py-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full text-xs sm:text-sm font-bold text-white">
                           BÁN CHẠY
                         </div>
                       )}
                     </div>
 
-                    {/* Product description */}
-                    <p className="text-sm sm:text-base md:text-lg text-gray-300">
+                    {/* Product description - CHỮ NHỎ HƠN */}
+                    <p className="text-sm sm:text-base text-gray-600">
                       {products[activeTab].description}
                     </p>
 
                     {/* Specifications */}
                     <div className="space-y-2 sm:space-y-3">
-                      <div className="text-xs sm:text-sm text-gray-400">THÔNG SỐ KỸ THUẬT</div>
+                      <div className="text-xs sm:text-sm text-gray-500">THÔNG SỐ KỸ THUẬT</div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
                         {products[activeTab].specs.map((spec, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-white/5 rounded-lg"
+                            className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-gray-50 rounded-lg"
                           >
-                            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
-                            <span className="text-xs sm:text-sm text-gray-300">{spec}</span>
+                            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
+                            <span className="text-xs sm:text-sm text-gray-700">{spec}</span>
                           </div>
                         ))}
                       </div>
@@ -314,7 +314,7 @@ export default function IndustrialHero() {
                       </button>
                       <button
                         onClick={() => window.open('tel:0903776456', '_blank')}
-                        className="px-4 py-2.5 sm:px-6 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg hover:bg-white/20 transition-all duration-300 text-sm sm:text-base"
+                        className="px-4 py-2.5 sm:px-6 sm:py-3 bg-white border border-gray-300 text-gray-800 rounded-lg hover:bg-gray-50 transition-all duration-300 text-sm sm:text-base shadow-sm"
                       >
                         BÁO GIÁ NGAY
                       </button>
@@ -323,12 +323,12 @@ export default function IndustrialHero() {
                 </AnimatePresence>
 
                 {/* Decorative elements */}
-                <div className="absolute -bottom-10 sm:-bottom-20 -right-10 sm:-right-20 w-32 h-32 sm:w-64 sm:h-64 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full blur-3xl" />
-                <div className="absolute -top-5 sm:-top-10 -left-5 sm:-left-10 w-20 h-20 sm:w-40 sm:h-40 bg-blue-500/10 rounded-full blur-3xl" />
+                <div className="absolute -bottom-10 sm:-bottom-20 -right-10 sm:-right-20 w-32 h-32 sm:w-64 sm:h-64 bg-gradient-to-r from-emerald-200/30 to-cyan-200/30 rounded-full blur-3xl" />
+                <div className="absolute -top-5 sm:-top-10 -left-5 sm:-left-10 w-20 h-20 sm:w-40 sm:h-40 bg-blue-200/20 rounded-full blur-3xl" />
               </div>
 
               {/* 3D effect border */}
-              <div className="absolute inset-0 rounded-xl sm:rounded-2xl border-2 border-transparent bg-gradient-to-r from-emerald-500/20 via-transparent to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 rounded-xl sm:rounded-2xl border-2 border-transparent bg-gradient-to-r from-emerald-200/30 via-transparent to-blue-200/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
 
             {/* Floating certification badges - Responsive positioning */}
@@ -340,7 +340,7 @@ export default function IndustrialHero() {
                     <span className="text-xs sm:text-sm md:text-base">ISO 9001:2015</span>
                   </div>
                 </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-ping" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-500 rounded-full animate-ping" />
               </div>
             </div>
 
@@ -363,10 +363,10 @@ export default function IndustrialHero() {
           className="mt-12 sm:mt-16 lg:mt-20 xl:mt-28"
         >
           <div className="text-center mb-8 sm:mb-10 lg:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               VÌ SAO CHỌN CHÚNG TÔI?
             </h2>
-            <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
+            <p className="text-gray-600 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
               Cam kết chất lượng và dịch vụ vượt trội trong ngành dây đai công nghiệp
             </p>
           </div>
@@ -378,7 +378,7 @@ export default function IndustrialHero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="group relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700/50 p-4 sm:p-5 md:p-6 hover:border-gray-600 transition-all duration-300 hover:scale-[1.02]"
+                className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 sm:p-5 md:p-6 hover:border-gray-300 transition-all duration-300 hover:scale-[1.02] shadow-sm hover:shadow-md"
               >
                 {/* Background gradient on hover */}
                 <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-xl" style={{
@@ -389,16 +389,16 @@ export default function IndustrialHero() {
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-lg bg-gradient-to-r ${feature.gradient} flex items-center justify-center mb-3 sm:mb-4 md:mb-5 group-hover:scale-110 transition-transform duration-300`}>
                     <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
                   </div>
-                  <h3 className="text-lg sm:text-xl md:text-xl font-bold text-white mb-2 sm:mb-3">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-400 text-sm sm:text-base">
+                  <p className="text-gray-600 text-sm sm:text-base">
                     {feature.description}
                   </p>
                   
                   {/* Animated arrow */}
                   <div className="mt-3 sm:mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-emerald-400">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-emerald-600">
                       <span>Tìm hiểu thêm</span>
                       <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                     </div>
@@ -421,29 +421,29 @@ export default function IndustrialHero() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="mt-12 sm:mt-16 lg:mt-20 xl:mt-28"
         >
-          <div className="relative bg-gradient-to-r from-emerald-600/20 via-cyan-600/20 to-blue-600/20 rounded-xl sm:rounded-2xl border border-white/10 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-cyan-500/5 to-blue-500/5" />
+          <div className="relative bg-gradient-to-r from-emerald-50 via-cyan-50 to-blue-50 rounded-xl sm:rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-100/20 via-cyan-100/20 to-blue-100/20" />
             
             <div className="relative z-10 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12">
               <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-center">
                 <div className="flex-1 space-y-3 sm:space-y-4">
-                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-bold text-white">
+                  <h3 className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl font-bold text-gray-900">
                     Cần tư vấn kỹ thuật hoặc báo giá?
                   </h3>
-                  <p className="text-gray-300 text-sm sm:text-base md:text-lg">
+                  <p className="text-gray-700 text-sm sm:text-base md:text-lg">
                     Đội ngũ kỹ sư của chúng tôi sẵn sàng hỗ trợ bạn 24/7 với giải pháp tối ưu nhất.
                   </p>
                   <div className="space-y-2 sm:space-y-3 pt-2">
-                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 text-gray-300">
-                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 text-gray-700">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                       <span className="text-xs sm:text-sm md:text-base">Thời gian làm việc: 7:30 - 17:30 (Thứ 2 - Thứ 7)</span>
                     </div>
-                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 text-gray-300">
-                      <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 text-gray-700">
+                      <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                       <span className="text-xs sm:text-sm md:text-base">Email: info@webbingvietnam.com</span>
                     </div>
-                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 text-gray-300">
-                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 text-gray-700">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                       <span className="text-xs sm:text-sm md:text-base">Địa chỉ: KCN Biên Hòa, Đồng Nai</span>
                     </div>
                   </div>
@@ -452,7 +452,7 @@ export default function IndustrialHero() {
                 <div className="w-full lg:w-auto space-y-3 sm:space-y-4">
                   <button
                     onClick={() => window.open('tel:0903776456', '_blank')}
-                    className="w-full sm:w-auto lg:w-full py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base md:text-lg px-6"
+                    className="w-full sm:w-auto lg:w-full py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base md:text-lg px-6 shadow-md"
                   >
                     <Phone className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                     <div className="text-left">
@@ -463,7 +463,7 @@ export default function IndustrialHero() {
                   
                   <button
                     onClick={() => router.push('/lien-he')}
-                    className="w-full sm:w-auto lg:w-full py-3 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base px-6"
+                    className="w-full sm:w-auto lg:w-full py-3 sm:py-4 bg-white border border-gray-300 text-gray-800 font-bold rounded-xl hover:bg-gray-50 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base px-6 shadow-sm"
                   >
                     <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>GỬI YÊU CẦU QUA EMAIL</span>
@@ -473,8 +473,8 @@ export default function IndustrialHero() {
             </div>
 
             {/* Animated elements */}
-            <div className="absolute top-0 left-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-emerald-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-blue-500/10 rounded-full blur-3xl" />
+            <div className="absolute top-0 left-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-emerald-200/30 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-blue-200/30 rounded-full blur-3xl" />
           </div>
         </motion.div>
       </div>
@@ -487,12 +487,12 @@ export default function IndustrialHero() {
         className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2"
       >
         <div className="flex flex-col items-center gap-1.5 sm:gap-2">
-          <span className="text-xs sm:text-sm text-gray-400">Cuộn xuống</span>
-          <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-gray-600 rounded-full flex justify-center p-1">
+          <span className="text-xs sm:text-sm text-gray-500">Cuộn xuống</span>
+          <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-gray-400 rounded-full flex justify-center p-1">
             <motion.div
               animate={{ y: [0, 6, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1 h-3 bg-gradient-to-b from-emerald-400 to-cyan-400 rounded-full"
+              className="w-1 h-3 bg-gradient-to-b from-emerald-500 to-cyan-500 rounded-full"
             />
           </div>
         </div>
